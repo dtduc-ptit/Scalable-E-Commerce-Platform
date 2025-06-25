@@ -26,7 +26,6 @@ const register = async (req, res) => {
 
         res.status(201).json({
             message: 'Registration successful',
-            user: user,
         });
     }
     catch (error) {
@@ -69,7 +68,40 @@ const login = async (req, res) => {
     }
 }
 
+const getProfile = async (req, res) => {
+    try {
+        const id = req.user.userId; 
+        const user = await User.findById(id);
+
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        res.status(200).json({ user });
+    } catch (err) {
+        console.error('Get Profile Error:', err);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+};
+
+const updateProfile = async (req, res) => {
+  try {
+    const { name } = req.body;
+    const user = await User.findByIdAndUpdate(
+      req.user.userId,
+      { name },
+      { new: true }
+    );
+
+    res.json({ message: 'Update Successful' });
+  } catch (err) {
+    res.status(400).json({ message: 'Update Error', error: err.message });
+  }
+};
+
 module.exports = {
     register,
     login,
+    getProfile,
+    updateProfile
 }
