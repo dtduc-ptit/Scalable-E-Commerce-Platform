@@ -18,6 +18,8 @@ services:
       - "3001:3001"
     environment:
       - PORT=3001
+    env_file:
+      - ./services/user-service/.env
 
   product-catalog-service:
     build:
