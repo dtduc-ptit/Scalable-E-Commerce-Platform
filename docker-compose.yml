@@ -9,6 +9,8 @@ services:
       - "8080:8080"
     environment:
       - PORT=8080
+    env_file:
+      - ./gateway/.env
 
   user-service:
     build:
@@ -29,6 +31,8 @@ services:
       - "3002:3002"
     environment:
       - PORT=3002
+    env_file:
+      - ./services/product-catalog-service/.env
 
   shopping-cart-service:
     build:
@@ -38,6 +42,8 @@ services:
       - "3003:3003"
     environment:
       - PORT=3003
+    env_file:
+      - ./services/shopping-cart-service/.env
 
   order-service:
     build:
@@ -47,6 +53,8 @@ services:
       - "3004:3004"
     environment:
       - PORT=3004
+    env_file:
+      - ./services/order-service/.env
 
   payment-service:
     build:
@@ -56,6 +64,8 @@ services:
       - "3005:3005"
     environment:
       - PORT=3005
+    env_file:
+      - ./services/payment-service/.env
 
   notification-service:
     build:
@@ -65,4 +75,6 @@ services:
       - "3006:3006"
     environment:
       - PORT=3006
+    env_file:
+      - ./services/notification-service/.env
       
