@@ -42,6 +42,7 @@ services:
       - "3003:3003"
     environment:
       - PORT=3003
+      - PRODUCT_SERVICE_URI=http://product-catalog-service:3002
     env_file:
       - ./services/shopping-cart-service/.env
 
