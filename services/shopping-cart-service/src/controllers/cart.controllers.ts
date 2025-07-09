@@ -88,4 +88,80 @@ export const addItemToCart = async (req: Request, res: Response) => {
             error: error instanceof Error ? error.message : String(error),
         });
     }
-}
+};
+
+export const removeItemFromCart = async (req: Request, res: Response) => {
+    const { userId, productId } = req.params;
+
+    try {
+        const cartRepo = AppDataSource.getRepository(Cart);
+        const cartItemRepo = AppDataSource.getRepository(CartItem);
+
+        const cart = await cartRepo.findOne({
+            where: { userId },
+            relations: ['items'],
+        });
+
+        if (!cart) {
+            return res.status(404).json({ message: 'Cart not found' });
+        }
+
+        const itemToRemove = cart.items.find(item => item.productId === productId);
+
+        if (!itemToRemove) {
+            return res.status(404).json({ message: 'Product not found in cart' });
+        }
+        await cartItemRepo.remove(itemToRemove);
+
+        cart.items = cart.items.filter(item => item.productId !== productId);
+        await cartRepo.save(cart);
+
+        return res.json({ message: 'Product removed from cart successfully' });
+    } catch (error) {
+        console.error('Remove from cart error:', error);
+        return res.status(500).json({ message: 'Internal server error' });
+    }
+};
+
+export const updateItemInCart = async (req: Request, res: Response) => {
+    const { userId, productId } = req.params;
+    const { quantity } = req.body;
+
+    if (quantity <= 0) {
+        return res.status(400).json({ message: 'Quantity must be greater than 0' });
+    }
+
+    try {
+        const cartRepo = AppDataSource.getRepository(Cart);
+        const cartItemRepo = AppDataSource.getRepository(CartItem);
+
+        const cart = await cartRepo.findOne({
+            where: { userId },
+            relations: ['items'],
+        });
+
+        if (!cart) {
+            return res.status(404).json({ message: 'Cart not found' });
+        }
+
+        const itemToUpdate = cart.items.find(item => item.productId === productId);
+
+        if (!itemToUpdate) {
+            return res.status(404).json({ message: 'Product not found in cart' });
+        }
+
+        itemToUpdate.quantity = quantity;
+        await cartItemRepo.save(itemToUpdate);
+
+        return res.json({
+            message: 'Cart item updated successfully', item: {
+                id: itemToUpdate.id,
+                productId: itemToUpdate.productId,
+                quantity: itemToUpdate.quantity
+            }
+        });
+    } catch (error) {
+        console.error('Update cart item error:', error);
+        return res.status(500).json({ message: 'Internal server error' });
+    }
+};
