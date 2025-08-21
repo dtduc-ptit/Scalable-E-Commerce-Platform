@@ -39,7 +39,7 @@ export const addItemToCart = async (req: Request, res: Response) => {
     }
 
     try {
-        const productRes = await axios.get(`${PRODUCT_SERVICE_URI}/api/products/${productId}`);
+        const productRes = await axios.get(`${PRODUCT_SERVICE_URI}/${productId}`);
         if (productRes.status !== 200 || !productRes.data) {
             return res.status(404).json({ message: `Product with ID ${productId} not found` });
         }
