@@ -143,10 +143,47 @@ const removeProduct = async (req, res) => {
     });
   }
 }
+
+const deductProduct = async (req, res) => {
+  const { id } = req.params;
+  const { quantity } = req.body;
+
+  if (quantity <= 0) {
+    return res.status(400).json({
+      message: "Quantity must be greater than zero"
+    });
+  }
+
+  try {
+    const product = await Product.findById(id);
+    if (!product) {
+      return res.status(404).json({ message: `Product with ID ${id} not found` });
+    }
+
+    if (product.stock < quantity) {
+      return res.status(400).json({ message: "Insufficient stock" });
+    }
+
+    product.stock -= quantity;
+    await product.save();
+
+    res.json({
+      message: `Deducted ${quantity} from product with ID ${id}`,
+    });
+  } catch (err) {
+    console.error("Error deducting product:", err);
+    res.status(500).json({
+      message: "Internal server error",
+      error: err.message
+    });
+  }
+}
+
 module.exports = {
     getAllProduct,
     createProduct,
     getProductById,
     updateProduct,
-    removeProduct
+    removeProduct,
+    deductProduct
 }

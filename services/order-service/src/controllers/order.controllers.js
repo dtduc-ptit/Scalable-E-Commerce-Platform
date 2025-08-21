@@ -1,4 +1,4 @@
-import axios from "axios";
+const axios = require('axios');
 require('dotenv').config();
 const Order = require('../models/order.models');
 const mongoose = require("mongoose");
@@ -36,10 +36,12 @@ const getOrderById = async (req, res) => {
 const createOrder = async (req, res) => {
     const userId = req.params.userId;
     const { products, totalAmount } = req.body;
+
     try {
-        const productChecks = await Promise.all(products.map(async (product) => {
-            const product = await axios.get(`${PRODUCT_SERVICE_URI}/${product.productId}`);
-            return product.data && product.data.stock >= product.quantity;
+        const productChecks = await Promise.all(
+            products.map(async (product) => {
+                const productData = await axios.get(`${PRODUCT_SERVICE_URI}/${product.productId}`);
+                return productData.data && productData.data.stock >= product.quantity;
             })
         );
 
@@ -53,18 +55,21 @@ const createOrder = async (req, res) => {
             totalAmount
         });
         await newOrder.save();
-        
-        await Promise.all(products.map(async (product) => {
-            await axios.put(`${PRODUCT_SERVICE_URI}/${product.productId}/deduct`, { 
-                quantity: product.quantity 
-            });
-        }));
+
+        await Promise.all(
+            products.map(async (product) => {
+                await axios.put(`${PRODUCT_SERVICE_URI}/${product.productId}/deduct`, {
+                    quantity: product.quantity
+                });
+            })
+        );
 
         res.status(201).json(newOrder);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
 };
+
 
 const updateOrderStatus = async (req, res) => {
     const orderId = req.params.orderId;
