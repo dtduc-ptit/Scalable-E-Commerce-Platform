@@ -9,7 +9,7 @@ const productRoutes = require('./routes/product.routes');
 app.use(cors());
 app.use(express.json());
 
-app.use('/api/products', productRoutes);
+app.use('', productRoutes);
 
 const PORT = process.env.PORT || 3002;
 
