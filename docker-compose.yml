@@ -1,17 +1,6 @@
 version: '3.8'
 
 services:
-  gateway:
-    build:
-      context: ./gateway
-      dockerfile: Dockerfile
-    ports:
-      - "8080:8080"
-    environment:
-      - PORT=8080
-    env_file:
-      - ./gateway/.env
-
   user-service:
     build:
       context: ./services/user-service
@@ -22,6 +11,8 @@ services:
       - PORT=3001
     env_file:
       - ./services/user-service/.env
+    networks:
+      - ecommerce-network
 
   product-catalog-service:
     build:
@@ -33,6 +24,8 @@ services:
       - PORT=3002
     env_file:
       - ./services/product-catalog-service/.env
+    networks:
+      - ecommerce-network
 
   shopping-cart-service:
     build:
@@ -42,9 +35,10 @@ services:
       - "3003:3003"
     environment:
       - PORT=3003
-      - PRODUCT_SERVICE_URI=http://product-catalog-service:3002
     env_file:
       - ./services/shopping-cart-service/.env
+    networks:
+      - ecommerce-network
 
   order-service:
     build:
@@ -56,6 +50,8 @@ services:
       - PORT=3004
     env_file:
       - ./services/order-service/.env
+    networks:
+      - ecommerce-network
 
   payment-service:
     build:
@@ -67,6 +63,8 @@ services:
       - PORT=3005
     env_file:
       - ./services/payment-service/.env
+    networks:
+      - ecommerce-network
 
   notification-service:
     build:
@@ -78,12 +76,16 @@ services:
       - PORT=3006
     env_file:
       - ./services/notification-service/.env
+    networks:
+      - ecommerce-network
   nginx:
     image: nginx:latest
     ports:
       - "80:80"
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf
+    networks:
+      - ecommerce-network
     depends_on:
       - user-service
       - product-catalog-service
@@ -91,4 +93,7 @@ services:
       - order-service
       - payment-service
       - notification-service
-      
+networks:
+  ecommerce-network:
+    driver: bridge
+    
