@@ -7,7 +7,9 @@
     "axios": "^1.10.0",
     "cors": "^2.8.5",
     "dotenv": "^16.5.0",
-    "express": "^5.1.0"
+    "express": "^5.1.0",
+    "mongoose": "^8.17.2",
+    "stripe": "^18.4.0"
   },
   "devDependencies": {
     "eslint": "^9.29.0",
