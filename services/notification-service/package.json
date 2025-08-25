@@ -4,6 +4,7 @@
     "dev": "nodemon src/index.js"
   },
   "dependencies": {
+    "@sendgrid/mail": "^8.1.5",
     "axios": "^1.10.0",
     "cors": "^2.8.5",
     "dotenv": "^16.5.0",
